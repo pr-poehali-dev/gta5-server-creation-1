@@ -252,7 +252,91 @@ setInterval(() => {
     });
 }, 60000);
 
+const DPS_UNIFORM_MALE = {
+    tops: { drawable: 55, texture: 0, palette: 0 },
+    legs: { drawable: 31, texture: 0, palette: 0 },
+    shoes: { drawable: 25, texture: 0, palette: 0 },
+    hat: { drawable: 58, texture: 2, palette: 0 },
+    accessories: { drawable: 127, texture: 0, palette: 0 }
+};
+
+const DPS_UNIFORM_FEMALE = {
+    tops: { drawable: 48, texture: 0, palette: 0 },
+    legs: { drawable: 34, texture: 0, palette: 0 },
+    shoes: { drawable: 25, texture: 0, palette: 0 },
+    hat: { drawable: 58, texture: 2, palette: 0 }
+};
+
+mp.events.addCommand('joindps', (player) => {
+    const data = playerData.get(player.id);
+    if (!data) return;
+    
+    if (data.faction) {
+        player.outputChatBox(`!{#FF0000}Вы уже состоите в фракции: ${data.faction}`);
+        return;
+    }
+    
+    data.faction = 'ДПС';
+    data.rank = 'Рядовой';
+    player.outputChatBox("!{#00FF00}Вы вступили в ГИБДД ДПС!");
+    player.outputChatBox("!{#87CEEB}Используйте /dpsuniform чтобы надеть форму");
+});
+
+mp.events.addCommand('dpsuniform', (player) => {
+    const data = playerData.get(player.id);
+    if (!data) return;
+    
+    if (data.faction !== 'ДПС') {
+        player.outputChatBox("!{#FF0000}Вы не состоите в ДПС!");
+        return;
+    }
+    
+    const isMale = player.model === mp.joaat("mp_m_freemode_01");
+    const uniform = isMale ? DPS_UNIFORM_MALE : DPS_UNIFORM_FEMALE;
+    
+    player.setClothes(11, uniform.tops.drawable, uniform.tops.texture, 0);
+    player.setClothes(4, uniform.legs.drawable, uniform.legs.texture, 0);
+    player.setClothes(6, uniform.shoes.drawable, uniform.shoes.texture, 0);
+    player.setProp(0, uniform.hat.drawable, uniform.hat.texture);
+    
+    if (isMale) {
+        player.setClothes(8, uniform.accessories.drawable, uniform.accessories.texture, 0);
+    }
+    
+    player.outputChatBox("!{#00FF00}Вы надели форму ДПС!");
+});
+
+mp.events.addCommand('removeuniform', (player) => {
+    player.setClothes(11, 15, 0, 0);
+    player.setClothes(4, 21, 0, 0);
+    player.setClothes(6, 1, 0, 0);
+    player.clearProp(0);
+    player.setClothes(8, 15, 0, 0);
+    
+    player.outputChatBox("!{#FFD700}Вы сняли форму");
+});
+
+mp.events.addCommand('dpslist', (player) => {
+    player.outputChatBox("!{#1E90FF}=== Сотрудники ДПС онлайн ===");
+    
+    let count = 0;
+    playerData.forEach((data, playerId) => {
+        if (data.faction === 'ДПС') {
+            const targetPlayer = mp.players.at(playerId);
+            if (targetPlayer) {
+                player.outputChatBox(`!{#FFFFFF}[${playerId}] ${data.name} - ${data.rank || 'Рядовой'}`);
+                count++;
+            }
+        }
+    });
+    
+    if (count === 0) {
+        player.outputChatBox("!{#FF0000}Нет сотрудников ДПС онлайн");
+    }
+});
+
 console.log("=================================");
 console.log("GTA 5 RAGE:MP Сервер запущен!");
 console.log("Версия: Node.js (Рекомендуется Node.js 16.x)");
+console.log("Система ДПС с формой загружена!");
 console.log("=================================");
