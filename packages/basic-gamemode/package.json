@@ -1,0 +1,15 @@
+{
+  "name": "basic-gamemode",
+  "version": "1.0.0",
+  "description": "Базовый мод для RAGE:MP сервера с экономикой, работами и фракциями",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": ["ragemp", "gta5", "roleplay"],
+  "author": "",
+  "license": "MIT"
+}
